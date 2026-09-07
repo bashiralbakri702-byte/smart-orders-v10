@@ -1,0 +1,105 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Smart Orders</title>
+  <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+<div id="app">
+  <header class="topbar">
+    <div class="brand-wrap"><div class="brand-mark">SO</div><div><div class="brand">Smart Orders</div><div class="brand-sub">نظام إدارة الطلبات</div></div></div>
+    <div class="top-actions"><button id="notifyBtn" class="icon-btn notification-btn" title="التنبيهات">🔔<span id="notifyCount" class="notify-count hidden">0</span></button><button id="themeBtn" class="icon-btn" title="الوضع الداكن">◐</button><button id="languageBtn" class="btn ghost" type="button" title="تغيير اللغة">English</button><span id="userName">زائر</span><button id="logoutBtn" class="btn ghost hidden">خروج</button></div>
+  </header>
+  <div class="layout">
+    <aside class="sidebar">
+      <div class="sidebar-title">القائمة الرئيسية</div>
+      <button class="nav active" data-view="dashboard"><span>⌂</span> الرئيسية</button>
+      <button class="nav" data-view="orders"><span>▤</span> الطلبات</button>
+      <button class="nav" data-view="products"><span>▦</span> المنتجات</button>
+      <button class="nav" data-view="customers"><span>♙</span> العملاء</button>
+      <button class="nav" data-view="reports"><span>◒</span> التقارير</button>
+      <button class="nav" data-view="whatsapp"><span>◉</span> واتساب</button>
+      <button class="nav" data-view="activity"><span>◌</span> النشاط والتنبيهات</button><button class="nav" data-view="smartSearch"><span>⌕</span> البحث الذكي</button><button class="nav" data-view="settings"><span>⚙</span> الإعدادات</button>
+      <div class="sidebar-footer"><span class="online-dot"></span> النظام يعمل محليًا</div>
+    </aside>
+    <main class="content">
+      <section id="loginView" class="login-card">
+        <div class="login-icon">SO</div><h1>تسجيل الدخول</h1><p>لوحة إدارة الطلبات الذكية</p>
+        <input id="email" type="email" placeholder="البريد الإلكتروني" value="admin@example.com">
+        <input id="password" type="password" placeholder="كلمة المرور" value="ChangeMe123!">
+        <button id="loginBtn" class="btn primary wide">دخول</button>
+        <button id="demoLoginBtn" class="btn demo wide">دخول تجريبي بدون قاعدة بيانات</button>
+        <small>الوضع التجريبي يستخدم بيانات محلية فقط. سنربط PostgreSQL لاحقًا.</small>
+      </section>
+
+      <section id="dashboardView" class="view hidden">
+        <div class="page-title"><div><div class="eyebrow">نظرة عامة</div><h1>لوحة التحكم</h1><p>مرحبًا بك، هذه ملخصات نشاط المتجر اليوم.</p></div><button class="btn primary" id="newOrderBtn">+ طلب جديد</button></div>
+        <div class="stats">
+          <div class="stat stat-orders"><div class="stat-icon">▤</div><span>إجمالي الطلبات</span><strong id="statOrders">0</strong><small>خلال الفترة الحالية</small></div>
+          <div class="stat stat-sales"><div class="stat-icon">ر.س</div><span>إجمالي المبيعات</span><strong id="statSales">0</strong><small>قيمة الطلبات المكتملة</small></div>
+          <div class="stat stat-products"><div class="stat-icon">▦</div><span>المنتجات</span><strong id="statProducts">0</strong><small>منتج نشط</small></div>
+          <div class="stat stat-customers"><div class="stat-icon">♙</div><span>العملاء</span><strong id="statCustomers">0</strong><small>عميل مسجل</small></div>
+        </div>
+        <div class="dashboard-grid">
+          <div class="panel chart-panel"><div class="panel-head"><div><h2>المبيعات</h2><p>أداء المبيعات خلال آخر 7 أيام</p></div><span class="trend">↗ 18.4%</span></div><div id="salesChart" class="fake-chart"></div><div class="chart-labels"><span>السبت</span><span>الأحد</span><span>الإثنين</span><span>الثلاثاء</span><span>الأربعاء</span><span>الخميس</span><span>الجمعة</span></div></div>
+          <div class="panel status-panel"><div class="panel-head"><div><h2>حالة الطلبات</h2><p>التوزيع الحالي</p></div></div><div id="statusBreakdown"></div></div>
+        </div>
+        <div class="panel"><div class="panel-head"><div><h2>آخر الطلبات</h2><p>آخر العمليات المسجلة في النظام</p></div><button class="btn ghost" data-go="orders">عرض الكل</button></div><div id="recentOrders"></div></div>
+      </section>
+
+      <section id="ordersView" class="view hidden"><div class="page-title"><div><div class="eyebrow">إدارة المبيعات</div><h1>الطلبات</h1><p>إدارة وتتبع جميع الطلبات.</p></div><button class="btn primary" id="newOrderBtn2">+ طلب جديد</button></div><div class="toolbar orders-toolbar"><input id="orderSearch" class="search" placeholder="ابحث برقم الطلب أو اسم العميل أو الهاتف..." aria-label="بحث الطلبات"><select id="statusFilter" aria-label="تصفية الحالة"><option value="all">كل الحالات</option><option value="new">جديد</option><option value="confirmed">مؤكد</option><option value="preparing">قيد التجهيز</option><option value="shipped">تم الشحن</option><option value="completed">مكتمل</option><option value="cancelled">ملغي</option></select><select id="sourceFilter" aria-label="تصفية المصدر"><option value="all">كل المصادر</option><option value="website">الموقع</option><option value="whatsapp">واتساب</option><option value="manual">يدوي</option><option value="api">API</option></select><select id="dateFilter" aria-label="تصفية التاريخ"><option value="all">كل الفترات</option><option value="today">اليوم</option><option value="7">آخر 7 أيام</option><option value="30">آخر 30 يومًا</option></select></div><div class="orders-summary" id="ordersSummary"></div><div class="panel"><div id="ordersTable"></div></div></section>
+
+      <section id="productsView" class="view hidden"><div class="page-title"><div><div class="eyebrow">كتالوج المتجر</div><h1>المنتجات والمخزون</h1><p>إدارة الأسعار، الكميات، التصنيفات وحالة التوفر.</p></div><button class="btn primary" id="addProductBtn">+ منتج جديد</button></div><div class="product-toolbar"><input id="productSearch" class="search" placeholder="ابحث بالاسم أو SKU أو الباركود..." aria-label="بحث المنتجات"><select id="productCategoryFilter"><option value="all">كل التصنيفات</option></select><select id="stockFilter"><option value="all">كل المخزون</option><option value="in">متوفر</option><option value="low">مخزون منخفض</option><option value="out">نفد المخزون</option></select><select id="productStatusFilter"><option value="active">النشطة</option><option value="inactive">المعطلة</option><option value="all">الكل</option></select></div><div id="productsSummary" class="orders-summary"></div><div id="productsGrid" class="product-grid"></div></section>
+      <section id="customersView" class="view hidden">
+<div class="page-title"><div><div class="eyebrow">إدارة العملاء</div><h1>العملاء</h1><p>ملفات العملاء، سجل الطلبات، المشتريات والملاحظات.</p></div><button class="btn primary" id="addCustomerBtn">+ عميل جديد</button></div>
+<div id="customerStats" class="stats customer-stats"></div>
+<div class="customer-toolbar"><input id="customerSearch" class="search" placeholder="ابحث بالاسم أو الهاتف أو المدينة أو البريد..."><select id="customerSort"><option value="recent">الأحدث نشاطًا</option><option value="spent">الأعلى مشتريات</option><option value="orders">الأكثر طلبات</option><option value="name">الاسم</option></select><select id="customerSegment"><option value="all">كل العملاء</option><option value="new">جديد</option><option value="vip">VIP</option><option value="active">نشط</option></select></div>
+<div id="customersSummary" class="orders-summary"></div><div id="customersGrid" class="customer-grid"></div></section>
+      <section id="reportsView" class="view hidden">
+  <div class="page-title"><div><div class="eyebrow">التحليلات والأداء</div><h1>التقارير</h1><p>صورة واضحة عن المبيعات والطلبات والعملاء وأداء المنتجات.</p></div><button class="btn ghost" id="refreshReports">↻ تحديث</button></div>
+  <div class="report-toolbar"><div class="report-periods"><button class="period-btn active" data-period="7">7 أيام</button><button class="period-btn" data-period="30">30 يومًا</button><button class="period-btn" data-period="all">كل الفترة</button></div><span id="reportRange" class="meta"></span></div>
+  <div id="reportStats" class="stats report-stats"></div>
+  <div class="reports-grid">
+    <div class="panel report-wide"><div class="panel-head"><div><h2>اتجاه المبيعات</h2><p>قيمة الطلبات المكتملة يوميًا</p></div><span id="reportSalesTotal" class="trend"></span></div><div id="reportSalesChart" class="report-chart"></div></div>
+    <div class="panel"><div class="panel-head"><div><h2>مصادر الطلبات</h2><p>نسبة كل قناة</p></div></div><div id="sourceReport"></div></div>
+    <div class="panel"><div class="panel-head"><div><h2>أفضل المنتجات</h2><p>حسب قيمة المبيعات التقديرية</p></div></div><div id="topProductsReport"></div></div>
+    <div class="panel"><div class="panel-head"><div><h2>أفضل العملاء</h2><p>حسب إجمالي المشتريات</p></div></div><div id="topCustomersReport"></div></div>
+    <div class="panel report-wide"><div class="panel-head"><div><h2>حالة الطلبات</h2><p>التوزيع خلال الفترة المحددة</p></div></div><div id="reportStatus"></div></div>
+  </div>
+</section>
+      <section id="whatsappView" class="view hidden">
+  <div class="page-title"><div><div class="eyebrow">قنوات البيع</div><h1>واتساب</h1><p>صندوق محادثات موحد لتحويل رسائل العملاء إلى طلبات منظمة.</p></div><span class="wa-connection"><i></i> وضع تجريبي</span></div>
+  <div id="whatsappStats" class="stats whatsapp-stats"></div>
+  <div class="whatsapp-layout">
+    <div class="panel conversations-panel"><div class="panel-head"><div><h2>المحادثات</h2><p>الرسائل الواردة من العملاء.</p></div><input id="waSearch" class="mini-search" placeholder="بحث..." aria-label="بحث محادثات واتساب"></div><div id="waConversations"></div></div>
+    <div class="panel chat-panel"><div id="waChatHeader" class="chat-header"></div><div id="waMessages" class="wa-messages"></div><div class="wa-compose"><textarea id="waMessageInput" rows="2" placeholder="اكتب رسالة تجريبية..."></textarea><button id="waSendBtn" class="btn primary">إرسال</button></div></div>
+    <div class="panel wa-order-panel"><div class="panel-head"><div><h2>تحويل إلى طلب</h2><p>استخرج بيانات الطلب من المحادثة.</p></div></div><div id="waOrderPreview"></div></div>
+  </div>
+</section>
+      <section id="smartSearchView" class="view hidden">
+<div class="page-title"><div><div class="eyebrow">الوصول السريع</div><h1>البحث الذكي</h1><p>ابحث بالاسم أو SKU أو الباركود واعثر على البدائل بسرعة.</p></div><span class="meta">Ctrl + K</span></div>
+<div class="panel smart-search-panel"><div class="smart-search-box"><span>⌕</span><input id="smartSearchInput" class="search" placeholder="اكتب اسم المنتج أو SKU أو الباركود..." autocomplete="off"><button id="smartSearchClear" class="btn ghost">مسح</button></div><div id="smartSearchResults" class="smart-results"></div></div>
+</section>
+      <section id="activityView" class="view hidden">
+<div class="page-title"><div><div class="eyebrow">المراقبة والتنبيهات</div><h1>النشاط والتنبيهات</h1><p>تابع ما يحدث في النظام والتنبيهات المهمة أولًا بأول.</p></div><div class="activity-actions"><button class="btn ghost" id="markAllReadBtn">✓ تحديد الكل كمقروء</button><button class="btn ghost" id="clearActivityBtn">مسح السجل</button></div></div>
+<div id="activityStats" class="stats activity-stats"></div>
+<div class="activity-grid"><div class="panel"><div class="panel-head"><div><h2>التنبيهات</h2><p>تنبيهات المخزون والطلبات والأحداث المهمة.</p></div><button class="btn ghost" id="refreshActivity">↻</button></div><div id="notificationsList"></div></div>
+<div class="panel"><div class="panel-head"><div><h2>سجل النشاط</h2><p>من قام بالعملية ومتى.</p></div><select id="activityFilter"><option value="all">كل العمليات</option><option value="order">الطلبات</option><option value="product">المنتجات</option><option value="customer">العملاء</option><option value="user">المستخدمون</option><option value="system">النظام</option></select></div><div id="auditList"></div></div></div>
+</section>
+<section id="settingsView" class="view hidden"><div class="page-title"><div><div class="eyebrow">الإدارة والأمان</div><h1>المستخدمون والصلاحيات</h1><p>تحكم في الأدوار وما يستطيع كل مستخدم الوصول إليه.</p></div><button class="btn primary" id="addUserBtn">+ مستخدم جديد</button></div><div class="role-cards" id="roleCards"></div><div class="panel"><div class="panel-head"><div><h2>المستخدمون</h2><p>يمكن تعطيل الحساب بدل حذفه.</p></div></div><div id="usersTable"></div></div></section>
+    </main>
+  </div>
+
+  <div id="orderModal" class="modal hidden"><div class="modal-card order-modal-card"><div class="modal-head"><div><h2 id="orderModalTitle">تفاصيل الطلب</h2><p id="orderModalMeta" class="meta"></p></div><button id="closeOrderModal" class="icon-btn">×</button></div><div id="orderDetail"></div></div></div>
+  <div id="newOrderModal" class="modal hidden"><div class="modal-card new-order-card"><div class="modal-head"><div><h2>إنشاء طلب جديد</h2><p class="meta">الوضع التجريبي — سيتم الحفظ محليًا</p></div><button id="closeNewOrderModal" class="icon-btn">×</button></div><form id="newOrderForm"><div class="form-grid"><label>اسم العميل<input id="newCustomer" required placeholder="مثال: أحمد محمد"></label><label>رقم الهاتف<input id="newPhone" required placeholder="05xxxxxxxx"></label><label>المدينة<input id="newCity" required placeholder="الرياض"></label><label>المصدر<select id="newSource"><option value="website">الموقع</option><option value="whatsapp">واتساب</option><option value="manual">يدوي</option></select></label><label class="full">المنتج<select id="newProduct"></select></label><label>الكمية<input id="newQty" type="number" min="1" value="1" required></label><label class="full">ملاحظات<textarea id="newNotes" rows="3" placeholder="ملاحظات التوصيل أو الطلب..."></textarea></label></div><div class="new-order-total"><span>الإجمالي المتوقع</span><strong id="newOrderTotal">0 ر.س</strong></div><div class="form-actions"><button type="button" class="btn ghost" id="cancelNewOrder">إلغاء</button><button type="submit" class="btn primary">إنشاء الطلب</button></div></form></div></div>
+  <div id="customerModal" class="modal hidden"><div class="modal-card new-order-card"><div class="modal-head"><div><h2 id="customerModalTitle">إضافة عميل</h2><p class="meta">بيانات العميل</p></div><button id="closeCustomerModal" class="icon-btn">×</button></div><form id="customerForm"><input type="hidden" id="customerId"><div class="form-grid"><label>اسم العميل<input id="customerName" required></label><label>رقم الهاتف<input id="customerPhone" required></label><label>المدينة<input id="customerCity"></label><label>البريد الإلكتروني<input id="customerEmail" type="email"></label><label class="full">العنوان<input id="customerAddress"></label><label class="full">ملاحظات<textarea id="customerNotes" rows="3"></textarea></label></div><div class="form-actions"><button type="button" class="btn ghost" id="cancelCustomer">إلغاء</button><button type="submit" class="btn primary">حفظ العميل</button></div></form></div></div>
+<div id="customerProfileModal" class="modal hidden"><div class="modal-card customer-profile-card"><div class="modal-head"><div><h2 id="customerProfileName">ملف العميل</h2><p id="customerProfileMeta" class="meta"></p></div><button id="closeCustomerProfile" class="icon-btn">×</button></div><div id="customerProfile"></div></div></div>
+<div id="userModal" class="modal hidden"><div class="modal-card new-order-card"><div class="modal-head"><div><h2 id="userModalTitle">إضافة مستخدم</h2><p class="meta">المستخدمون والصلاحيات</p></div><button id="closeUserModal" class="icon-btn">×</button></div><form id="userForm"><input type="hidden" id="userId"><div class="form-grid"><label>الاسم<input id="userFullName" required></label><label>البريد الإلكتروني<input id="userEmail" type="email" required></label><label>الدور<select id="userRole"><option value="admin">مدير</option><option value="sales">مبيعات</option><option value="warehouse">مستودع</option><option value="delivery">توصيل</option></select></label><label>الحالة<select id="userActive"><option value="true">نشط</option><option value="false">معطل</option></select></label></div><div class="form-actions"><button type="button" class="btn ghost" id="cancelUser">إلغاء</button><button type="submit" class="btn primary">حفظ المستخدم</button></div></form></div></div>
+<div id="productModal" class="modal hidden"><div class="modal-card new-order-card"><div class="modal-head"><div><h2 id="productModalTitle">إضافة منتج</h2><p class="meta">بيانات المنتج والمخزون</p></div><button id="closeProductModal" class="icon-btn">×</button></div><form id="productForm"><input type="hidden" id="productId"><div class="form-grid"><label>اسم المنتج<input id="productName" required></label><label>SKU<input id="productSku" required></label><label>الباركود<input id="productBarcode" placeholder="اختياري"></label><label>التصنيف<select id="productCategory"></select></label><label>السعر<input id="productPrice" type="number" min="0" step="0.01" required></label><label>المخزون<input id="productStock" type="number" min="0" step="1" required></label><label class="full">رابط صورة المنتج<input id="productImage" type="url" placeholder="https://..."></label></div><div id="stockMovementBox" class="stock-movement hidden"><div><b>تعديل المخزون</b><span class="meta">استخدم + للإضافة و − للخصم</span></div><div class="movement-row"><input id="stockDelta" type="number" step="1" value="0"><input id="stockReason" placeholder="سبب الحركة، مثال: استلام شحنة"></div></div><div class="form-actions"><button type="button" class="btn ghost" id="cancelProduct">إلغاء</button><button type="button" class="btn danger hidden" id="deactivateProduct">تعطيل المنتج</button><button type="submit" class="btn primary">حفظ المنتج</button></div></form></div></div><div id="toast"></div>
+</div>
+<script src="/js/i18n.js"></script>
+<script src="/js/app.js"></script>
+</body>
+</html>
